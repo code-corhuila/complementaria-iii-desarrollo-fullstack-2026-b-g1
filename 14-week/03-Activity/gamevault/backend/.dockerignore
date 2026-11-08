@@ -1,0 +1,5 @@
+target
+.git
+.env*
+.idea
+.DS_Store
