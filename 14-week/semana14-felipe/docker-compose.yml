@@ -1,0 +1,26 @@
+# Levanta backend (API) y frontend en contenedores:
+#   docker compose up --build
+services:
+  api:
+    build: ./backend
+    container_name: semana14-api
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: 3000
+      JWT_SECRET: ${JWT_SECRET:-secreto-solo-para-desarrollo}
+      JWT_EXPIRES_IN: ${JWT_EXPIRES_IN:-1h}
+      # Origen del frontend permitido por CORS
+      CORS_ORIGIN: http://localhost:8080,http://127.0.0.1:8080
+
+  web:
+    build: ./frontend
+    container_name: semana14-web
+    ports:
+      - "8080:8080"
+    environment:
+      PORT: 8080
+      # El navegador corre en tu PC, por eso la API se llama por localhost
+      API_URL: http://localhost:3000
+    depends_on:
+      - api
