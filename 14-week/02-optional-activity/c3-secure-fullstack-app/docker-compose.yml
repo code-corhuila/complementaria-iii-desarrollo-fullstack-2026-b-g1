@@ -1,0 +1,25 @@
+# Levanta backend (API con JWT) y frontend (React servido por nginx).
+# Uso: copiar .env.example a .env, definir JWT_SECRET y ejecutar `docker compose up --build`.
+services:
+  backend:
+    build: ./backend
+    container_name: productos-backend
+    environment:
+      JWT_SECRET: ${JWT_SECRET:?Define JWT_SECRET (min. 32 caracteres) en el archivo .env}
+      JWT_EXPIRATION_MINUTES: ${JWT_EXPIRATION_MINUTES:-60}
+      APP_USERNAME: ${APP_USERNAME:-admin}
+      APP_PASSWORD: ${APP_PASSWORD:?Define APP_PASSWORD en el archivo .env}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-http://localhost:3000,http://localhost:5173}
+    ports:
+      - "8080:8080"
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8080}
+    container_name: productos-frontend
+    depends_on:
+      - backend
+    ports:
+      - "3000:80"
